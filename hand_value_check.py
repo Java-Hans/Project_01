@@ -1,6 +1,9 @@
+import sys
+
 def hand_value_check(hole_cards, *board):
 
-
+	#list containing your two hole cards followed 
+	#cards on the board.
 	board_list = []
 
 	for card in hole_cards:
@@ -9,14 +12,28 @@ def hand_value_check(hole_cards, *board):
 	for i in board:
 		board_list.append(convert_card(i))
 
+	#Exception handling to catch repeats. 
+	#set removes all duplicates, list length then compared.
+	if len(board_list) != len(set(board_list)):
+		try:
+			raise ValueError('You have repeated cards')
+		except Exception as error:
+		    print(repr(error))
+		sys.exit()
+
+	board_list.sort(reverse = True)
+
+
+
 
 	if len(board_list) == 5: print("You are on the flop")
 	elif len(board_list) == 6: print("You are on the turn")
 	elif len(board_list) == 7: print("You are on the river")
 	else: print("Incorrect number of cards specified.")
-	print("your hole cards are ", hole_cards[0], " and ", hole_cards[1])
+	#print("your hole cards are ", hole_cards[0], " and ", hole_cards[1])
+	print("Complete list: ", board_list)
 
-	board_list.sort(reverse = True)
+	
 	board_numbers = []
 	board_suit = []
 	for card in board_list:
@@ -24,15 +41,13 @@ def hand_value_check(hole_cards, *board):
 		board_suit.append(card[1])
 	std_suit = ['S','H','C','D']
 	
-
+	best_hand = []
 	straight_flush = False
-	straight = False
+	straight, straight_hand = False, []
 	four_kind = False
 	flush = False
 	three_kind = False
 	pair_count = 0
-
-
 
 	#Check for flush
 	u_suit_count = []
@@ -54,7 +69,7 @@ def hand_value_check(hole_cards, *board):
 
 	#Look for a straight	
 	consecutive = 0
-	consec_list = []
+	
 
 	for x in range(len(board_list)-1):
 		if consecutive >= 4:
@@ -64,23 +79,18 @@ def hand_value_check(hole_cards, *board):
 
 		if board_list[x+1][0] == board_list[x][0] - 1:
 			consecutive += 1
-			if len(consec_list) == 0:
-				consec_list.append(board_list[x])
-			consec_list.append(board_list[x+1])
+			if len(straight_hand) == 0:
+				straight_hand.append(board_list[x])
+			straight_hand.append(board_list[x+1])
 
-		elif len(consec_list) < 5:
-			consec_list = []
+		#As long as there is one break in the 
+		#consec count, reset to 0
+		else:
+			consecutive = 0
 
-	print(board_list)
-	#print("consecutive numbers ", consecutive)
+	if len(straight_hand) < 5:
+		straight_hand = []
 
-	if straight and flush:
-		straight_flush = True
-
-	if straight:
-		print("your straight: ", consec_list)
-	else: 
-		print("you have no straight")
 
 
 
@@ -93,7 +103,7 @@ def hand_value_check(hole_cards, *board):
 	for number in set(board_numbers):
 		unique_numbers.append((number))
 
-	print(unique_numbers)
+	#print(unique_numbers)
 
 	for u_number in unique_numbers:
 		count = 0
@@ -116,6 +126,7 @@ def hand_value_check(hole_cards, *board):
 		if number[1] == 2:
 			pair_count +=1
 
+	straight_flush = straight and flush
 
 	if straight_flush:
 		print("You have a straight flush")
@@ -125,6 +136,8 @@ def hand_value_check(hole_cards, *board):
 		print("You have full house")
 	elif flush:
 		print("You have a flush")
+	elif straight:
+		print("You have a straight: ", straight_hand)
 	elif three_kind:
 		print("You have three of a kind")
 	elif pair_count == 2:
@@ -169,5 +182,5 @@ def convert_card(card_value):
 
 
 
-hand_value_check(('8d', 'Kc'), 'Kd', 'Qc', '7s', '9d', '6s')
+hand_value_check(('8d', '9s'), 'Kd', 'Qc', '7s', 'Td', 'Jd')
 
