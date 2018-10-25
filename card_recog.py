@@ -6,7 +6,7 @@ card_numbers = ["A.png", "2.png", "3.png", "4.png", "5.png", "6.png",\
 		"7.png", "8.png", "9.png", "10.png", "J.png", "Q.png", "K.png"]
 
 def t_matching(t_list,threshold):
-	img_rgb = cv2.imread('images/2_PP_shot_full_3h4s.png')
+	img_rgb = cv2.imread('images/0_PP_shot_full_9d4h.png')
 	img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
 
 	result = []
@@ -92,6 +92,8 @@ if card_number_result[1][0][0] < card_number_result[0][0][0]:
 
 print("You have", left_number, "of", left_suit)
 print("and", right_number, "of", right_suit)
+
+
 
 
 
