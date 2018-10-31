@@ -56,7 +56,7 @@ use 6h (from ten onwards use letters: Th, Kd")
 	four_kind, f_kind_hand = False, []
 	full_house, f_house_hand = False, []
 	flush, flush_hand = False, []
-	three_kind = False
+	three_kind_count, three_kind_hand = 0, []
 	pair_count = 0
 
 	#Check for flush
@@ -131,7 +131,6 @@ use 6h (from ten onwards use letters: Th, Kd")
 		for index in range(4):
 			if smallest_4[index][0] + index == 5:
 				match += 1
-				print("match = ",match)
 
 		if match == 4:
 			straight = True
@@ -184,23 +183,45 @@ use 6h (from ten onwards use letters: Th, Kd")
 				count += 1
 		u_number_count.append((u_number, count))
 
-
-	#print("matching cards: ", u_number_count)
-
 	#Now u_numbers_count is populated, search through to
 	#check for four of a kind, full house, pair etc.
-
+	three_kind_rank = 0
 	for number in u_number_count:
 		if number[1] == 4:
 			four_kind = True
 			f_kind_rank = number[0]
 		if number[1] == 3:
-			three_kind = True
-			three_kind_rank = number[0]
+			three_kind_count += 1
 		if number[1] == 2:
-			pair_count +=1
-		if three_kind and pair_count > 0:
+			pair_count += 1
+
+		if three_kind_count and pair_count or three_kind_count == 2: 
 			full_house = True
+			for numb2 in u_number_count:
+				if numb2[1] == 3:
+					three_kind_rank = numb2[0] 
+
+
+
+		elif three_kind_count == 2:
+			full_house = True
+
+			print("hello u_number_count = ", u_number_count)
+			#you have two 3 of a kind, find which
+			#one is bigger
+			for number in u_number_count:
+				if number[1] == 3 and number[0] > three_kind_rank:
+					three_kind_rank = number[0]
+			#now the smaller three kind will be used as a 
+			#pair in the full house
+			for index, number in enumerate(u_number_count):
+				if number[1] == 3 and number[0] != three_kind_rank:
+					u_number_count[index] = (number[0],2)
+	
+
+
+	
+
 
 	#Build the strongest 5 card hand
 	temp_board = []
@@ -219,21 +240,34 @@ use 6h (from ten onwards use letters: Th, Kd")
 			if num[1] == 2 and num[0] > largest_pair:
 				largest_pair = num[0]
 
+		#print("three kind rank = ", three_kind_rank)
 		#build the hand
 		for card in board_list:
-			if card[0] == three_kind_rank or card[0] == largest_pair:
+			if card[0] == three_kind_rank: 
 				f_house_hand.append(card)
+
+		#need to separate to above in situation where you have 
+		#2x three of a kind, one of those is treated as a pair.
+		count = 0
+		for card in board_list:
+			if count == 2:
+				continue
+			elif card[0] == largest_pair:
+				f_house_hand.append(card)
+				count += 1
+	elif three_kind_count > 0:
+		three_kind_rank = [card for card in u_number_count if card[1] == 3][0][0]
+		for card in board_list:
 			
+			
+			if card[0] == three_kind_rank:
+				three_kind_hand.append(card)
+		for card in board_list:
+			if card[0] != three_kind_rank and len(three_kind_hand) < 5:
+				three_kind_hand.append(card)
 
 
 
-	#if three_kind and pair_count > 0:
-	#	full_house = True
-
-	#	for 
-
-	#if len(f_kind_hand) != 5: 
-	#	raise_value_error("four kind hand, not equal to 5 numbers")
 
 
 
@@ -249,8 +283,8 @@ use 6h (from ten onwards use letters: Th, Kd")
 		print("You have a flush", conv_to_rank_suit(flush_hand))
 	elif straight:
 		print("You have a straight: ", conv_to_rank_suit(straight_hand))
-	elif three_kind:
-		print("You have three of a kind")
+	elif three_kind_count:
+		print("You have three of a kind", conv_to_rank_suit(three_kind_hand))
 	elif pair_count == 2:
 		print("You have two pair")
 	elif pair_count == 1:
@@ -330,4 +364,4 @@ def raise_value_error(message):
 
 
 #hand_value_check(('Ah', '2d'), 'Ad', 'Tc', 'As', 'Ac', '8d')
-hand_value_check(('Ac', '2d'), '4h', '3h', '5c', '8h', 'Ad')
+hand_value_check(('7c', '2s'), '7h', '5h', 'Ac', '7d', '9d')
