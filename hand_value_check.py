@@ -57,6 +57,7 @@ use 6h (from ten onwards use letters: Th, Kd")
 	full_house, f_house_hand = False, []
 	flush, flush_hand = False, []
 	three_kind_count, three_kind_hand = 0, []
+	two_pair, two_pair_hand = False, []
 	pair_count = 0
 
 	#Check for flush
@@ -217,8 +218,9 @@ use 6h (from ten onwards use letters: Th, Kd")
 			for index, number in enumerate(u_number_count):
 				if number[1] == 3 and number[0] != three_kind_rank:
 					u_number_count[index] = (number[0],2)
-	
 
+		elif pair_count > 1:
+			two_pair = True
 
 	
 
@@ -265,6 +267,30 @@ use 6h (from ten onwards use letters: Th, Kd")
 		for card in board_list:
 			if card[0] != three_kind_rank and len(three_kind_hand) < 5:
 				three_kind_hand.append(card)
+	elif two_pair:
+		u_number_count.sort(reverse=True)
+
+		for numb3 in u_number_count:
+			if numb3[1] == 2:
+				for card in board_list:
+					if card[0] == numb3[0]:
+						two_pair_hand.append(card)
+						if len(two_pair_hand) == 4:
+							continue
+		#now we have a result with two pairs for four cards,
+		#next step just append the largest remaining card that isn't
+		#already used in a pair
+		for card in board_list:
+			z_rank, z_suit = zip(*two_pair_hand)
+			if card[0] not in z_rank:
+				two_pair_hand.append(card)
+				break
+
+
+
+		
+
+		print("hi baby you count is: ", u_number_count)
 
 
 
@@ -285,8 +311,8 @@ use 6h (from ten onwards use letters: Th, Kd")
 		print("You have a straight: ", conv_to_rank_suit(straight_hand))
 	elif three_kind_count:
 		print("You have three of a kind", conv_to_rank_suit(three_kind_hand))
-	elif pair_count == 2:
-		print("You have two pair")
+	elif two_pair:
+		print("You have two pair", conv_to_rank_suit(two_pair_hand))
 	elif pair_count == 1:
 		print("You have a pair")
 
@@ -364,4 +390,4 @@ def raise_value_error(message):
 
 
 #hand_value_check(('Ah', '2d'), 'Ad', 'Tc', 'As', 'Ac', '8d')
-hand_value_check(('7c', '2s'), '7h', '5h', 'Ac', '7d', '9d')
+hand_value_check(('Ad', '2s'), '7h', '5h', 'Ac', '7d', '9d')
