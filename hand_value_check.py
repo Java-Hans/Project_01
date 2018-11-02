@@ -58,7 +58,7 @@ use 6h (from ten onwards use letters: Th, Kd")
 	flush, flush_hand = False, []
 	three_kind_count, three_kind_hand = 0, []
 	two_pair, two_pair_hand = False, []
-	pair_count = 0
+	pair_count, pair_hand = 0, []
 
 	#Check for flush
 	u_suit_count = []
@@ -222,6 +222,7 @@ use 6h (from ten onwards use letters: Th, Kd")
 		elif pair_count > 1:
 			two_pair = True
 
+
 	
 
 
@@ -286,16 +287,25 @@ use 6h (from ten onwards use letters: Th, Kd")
 				two_pair_hand.append(card)
 				break
 
-
+	elif pair_count:
+		pair_rank = 0
+		for numb3 in u_number_count:
+			if numb3[1] == 2:
+				pair_rank = numb3[0]
+				for card in board_list:
+					if numb3[0] == card[0]:
+						pair_hand.append(card)
 
 		
+		
+		assert (len(pair_hand) == 2), "Issue pending pair to pair_hand"
 
-		print("hi baby you count is: ", u_number_count)
+		#board list with the pair removed
+		re_board_list = [i for i in board_list if i[0] != pair_rank]
 
+		pair_hand += re_board_list[:3]
 
-
-
-
+					
 
 	
 
@@ -314,7 +324,7 @@ use 6h (from ten onwards use letters: Th, Kd")
 	elif two_pair:
 		print("You have two pair", conv_to_rank_suit(two_pair_hand))
 	elif pair_count == 1:
-		print("You have a pair")
+		print("You have a pair", conv_to_rank_suit(pair_hand))
 
 
 
@@ -390,4 +400,4 @@ def raise_value_error(message):
 
 
 #hand_value_check(('Ah', '2d'), 'Ad', 'Tc', 'As', 'Ac', '8d')
-hand_value_check(('Ad', '2s'), '7h', '5h', 'Ac', '7d', '9d')
+hand_value_check(('Ad', '2s'), '7h', '5h', 'Ac', '3d', '9d')
